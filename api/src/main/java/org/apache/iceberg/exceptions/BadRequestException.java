@@ -24,11 +24,11 @@ import com.google.errorprone.annotations.FormatMethod;
 public class BadRequestException extends RESTException implements CleanableFailure {
   @FormatMethod
   public BadRequestException(String message, Object... args) {
-    super(message, args);
+    super(400, message, args);
   }
 
   @FormatMethod
   public BadRequestException(Throwable cause, String message, Object... args) {
-    super(cause, message, args);
+    super(400, cause, message, args);
   }
 }

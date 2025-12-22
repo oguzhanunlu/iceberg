@@ -29,6 +29,6 @@ import com.google.errorprone.annotations.FormatMethod;
 public class UnprocessableEntityException extends RESTException {
   @FormatMethod
   public UnprocessableEntityException(String message, Object... args) {
-    super(message, args);
+    super(422, message, args);
   }
 }

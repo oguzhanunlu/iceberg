@@ -24,11 +24,11 @@ import com.google.errorprone.annotations.FormatMethod;
 public class NoSuchPlanTaskException extends RESTException {
   @FormatMethod
   public NoSuchPlanTaskException(String message, Object... args) {
-    super(message, args);
+    super(404, message, args);
   }
 
   @FormatMethod
   public NoSuchPlanTaskException(Throwable cause, String message, Object... args) {
-    super(cause, message, args);
+    super(404, cause, message, args);
   }
 }

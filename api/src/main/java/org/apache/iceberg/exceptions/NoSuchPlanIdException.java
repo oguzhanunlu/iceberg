@@ -25,14 +25,13 @@ import com.google.errorprone.annotations.FormatMethod;
  * exist.
  */
 public class NoSuchPlanIdException extends RESTException {
-
   @FormatMethod
   public NoSuchPlanIdException(String message, Object... args) {
-    super(message, args);
+    super(404, message, args);
   }
 
   @FormatMethod
   public NoSuchPlanIdException(Throwable cause, String message, Object... args) {
-    super(cause, message, args);
+    super(404, cause, message, args);
   }
 }

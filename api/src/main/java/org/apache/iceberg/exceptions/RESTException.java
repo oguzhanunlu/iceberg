@@ -22,13 +22,31 @@ import com.google.errorprone.annotations.FormatMethod;
 
 /** Base class for REST client exceptions */
 public class RESTException extends RuntimeException {
+  private final Integer statusCode;
+
   @FormatMethod
   public RESTException(String message, Object... args) {
-    super(String.format(message, args));
+    this(null, null, message, args);
   }
 
   @FormatMethod
   public RESTException(Throwable cause, String message, Object... args) {
+    this(null, cause, message, args);
+  }
+
+  @FormatMethod
+  public RESTException(Integer statusCode, String message, Object... args) {
+    this(statusCode, null, message, args);
+  }
+
+  @FormatMethod
+  public RESTException(Integer statusCode, Throwable cause, String message, Object... args) {
     super(String.format(message, args), cause);
+    this.statusCode = statusCode;
+  }
+
+  /** Returns the HTTP status code associated with this exception, or null if not available. */
+  public Integer statusCode() {
+    return statusCode;
   }
 }

@@ -236,7 +236,7 @@ public class ErrorHandlers {
         case 409:
           throw new AlreadyExistsException("%s", error.message());
         case 422:
-          throw new RESTException("Unable to process: %s", error.message());
+          throw new RESTException(error.code(), "Unable to process: %s", error.message());
       }
 
       super.accept(error);
@@ -297,7 +297,7 @@ public class ErrorHandlers {
           throw new ServiceUnavailableException("Service unavailable: %s", error.message());
       }
 
-      throw new RESTException("Unable to process: %s", error.message());
+      throw new RESTException(error.code(), "Unable to process: %s", error.message());
     }
   }
 
@@ -330,7 +330,7 @@ public class ErrorHandlers {
                 "Malformed request: %s: %s", error.type(), error.message());
         }
       }
-      throw new RESTException("Unable to process: %s", error.message());
+      throw new RESTException(error.code(), "Unable to process: %s", error.message());
     }
   }
 }
