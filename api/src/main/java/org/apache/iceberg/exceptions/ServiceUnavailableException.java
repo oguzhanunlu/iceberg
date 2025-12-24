@@ -24,11 +24,21 @@ import com.google.errorprone.annotations.FormatMethod;
 public class ServiceUnavailableException extends RESTException implements CleanableFailure {
   @FormatMethod
   public ServiceUnavailableException(String message, Object... args) {
-    super(503, message, args);
+    super(message, args);
   }
 
   @FormatMethod
   public ServiceUnavailableException(Throwable cause, String message, Object... args) {
-    super(503, cause, message, args);
+    super(cause, message, args);
+  }
+
+  @FormatMethod
+  public ServiceUnavailableException(Integer statusCode, String message, Object... args) {
+    super(statusCode, message, args);
+  }
+
+  @FormatMethod
+  public ServiceUnavailableException(Integer statusCode, Throwable cause, String message, Object... args) {
+    super(statusCode, cause, message, args);
   }
 }

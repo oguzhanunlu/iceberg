@@ -27,11 +27,21 @@ import com.google.errorprone.annotations.FormatMethod;
 public class NotAuthorizedException extends RESTException implements CleanableFailure {
   @FormatMethod
   public NotAuthorizedException(String message, Object... args) {
-    super(401, message, args);
+    super(message, args);
   }
 
   @FormatMethod
   public NotAuthorizedException(Throwable cause, String message, Object... args) {
-    super(401, cause, message, args);
+    super(cause, message, args);
+  }
+
+  @FormatMethod
+  public NotAuthorizedException(Integer statusCode, String message, Object... args) {
+    super(statusCode, message, args);
+  }
+
+  @FormatMethod
+  public NotAuthorizedException(Integer statusCode, Throwable cause, String message, Object... args) {
+    super(statusCode, cause, message, args);
   }
 }

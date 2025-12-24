@@ -53,6 +53,14 @@ import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.relocated.com.google.common.collect.ImmutableMap;
 import org.apache.iceberg.rest.auth.AuthSession;
 import org.apache.iceberg.rest.auth.TLSConfigurer;
+import org.apache.iceberg.exceptions.BadRequestException;
+import org.apache.iceberg.exceptions.ForbiddenException;
+import org.apache.iceberg.exceptions.NoSuchPlanIdException;
+import org.apache.iceberg.exceptions.NoSuchPlanTaskException;
+import org.apache.iceberg.exceptions.NotAuthorizedException;
+import org.apache.iceberg.exceptions.RESTException;
+import org.apache.iceberg.exceptions.ServiceFailureException;
+import org.apache.iceberg.exceptions.ServiceUnavailableException;
 import org.apache.iceberg.rest.responses.ErrorResponse;
 import org.apache.iceberg.rest.responses.ErrorResponseParser;
 import org.junit.jupiter.api.AfterAll;
@@ -644,5 +652,117 @@ public class TestHTTPClient {
       Item item = (Item) o;
       return Objects.equals(id, item.id) && Objects.equals(data, item.data);
     }
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode400() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(400).withMessage("Bad request").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(BadRequestException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(400);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode401() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(401).withMessage("Unauthorized").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(NotAuthorizedException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(401);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode403() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(403).withMessage("Forbidden").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(ForbiddenException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(403);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode500() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(500).withMessage("Internal Server Error").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(ServiceFailureException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(500);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode503() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(503).withMessage("Service Unavailable").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(ServiceUnavailableException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(503);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode404ForPlanId() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(404).withMessage("Plan not found").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.planErrorHandler().accept(error))
+        .isInstanceOf(NoSuchPlanIdException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(404);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode404ForPlanTask() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(404).withMessage("Plan task not found").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.planTaskHandler().accept(error))
+        .isInstanceOf(NoSuchPlanTaskException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(404);
+            });
+  }
+
+  @Test
+  public void testErrorHandlerStatusCode422() {
+    ErrorResponse error =
+        ErrorResponse.builder().responseCode(422).withMessage("Unprocessable entity").build();
+
+    assertThatThrownBy(() -> ErrorHandlers.defaultErrorHandler().accept(error))
+        .isInstanceOf(RESTException.class)
+        .satisfies(
+            e -> {
+              RESTException restException = (RESTException) e;
+              assertThat(restException.statusCode()).isEqualTo(422);
+            });
   }
 }

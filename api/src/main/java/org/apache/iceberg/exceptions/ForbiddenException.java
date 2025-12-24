@@ -24,11 +24,21 @@ import com.google.errorprone.annotations.FormatMethod;
 public class ForbiddenException extends RESTException implements CleanableFailure {
   @FormatMethod
   public ForbiddenException(String message, Object... args) {
-    super(403, message, args);
+    super(message, args);
   }
 
   @FormatMethod
   public ForbiddenException(Throwable cause, String message, Object... args) {
-    super(403, cause, message, args);
+    super(cause, message, args);
+  }
+
+  @FormatMethod
+  public ForbiddenException(Integer statusCode, String message, Object... args) {
+    super(statusCode, message, args);
+  }
+
+  @FormatMethod
+  public ForbiddenException(Integer statusCode, Throwable cause, String message, Object... args) {
+    super(statusCode, cause, message, args);
   }
 }

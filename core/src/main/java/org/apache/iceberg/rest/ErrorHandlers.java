@@ -107,7 +107,7 @@ public class ErrorHandlers {
         case 503:
         case 504:
           throw new CommitStateUnknownException(
-              new ServiceFailureException("Service failed: %s: %s", error.code(), error.message()));
+              new ServiceFailureException(error.code(), "Service failed: %s: %s", error.code(), error.message()));
       }
 
       super.accept(error);
@@ -147,7 +147,7 @@ public class ErrorHandlers {
         } else if (NoSuchTableException.class.getSimpleName().equals(error.type())) {
           throw new NoSuchTableException("%s", error.message());
         } else {
-          throw new NoSuchPlanIdException("%s", error.message());
+          throw new NoSuchPlanIdException(error.code(), "%s", error.message());
         }
       }
 
@@ -167,7 +167,7 @@ public class ErrorHandlers {
         } else if (NoSuchTableException.class.getSimpleName().equals(error.type())) {
           throw new NoSuchTableException("%s", error.message());
         } else {
-          throw new NoSuchPlanTaskException("%s", error.message());
+          throw new NoSuchPlanTaskException(error.code(), "%s", error.message());
         }
       }
 
@@ -191,7 +191,7 @@ public class ErrorHandlers {
         case 503:
         case 504:
           throw new CommitStateUnknownException(
-              new ServiceFailureException("Service failed: %s: %s", error.code(), error.message()));
+              new ServiceFailureException(error.code(), "Service failed: %s: %s", error.code(), error.message()));
       }
 
       super.accept(error);
@@ -230,7 +230,7 @@ public class ErrorHandlers {
           if (NamespaceNotEmptyException.class.getSimpleName().equals(error.type())) {
             throw new NamespaceNotEmptyException("%s", error.message());
           }
-          throw new BadRequestException("Malformed request: %s", error.message());
+          throw new BadRequestException(error.code(), "Malformed request: %s", error.message());
         case 404:
           throw new NoSuchNamespaceException("%s", error.message());
         case 409:
@@ -281,20 +281,22 @@ public class ErrorHandlers {
           if (IllegalArgumentException.class.getSimpleName().equals(error.type())) {
             throw new IllegalArgumentException(error.message());
           }
-          throw new BadRequestException("Malformed request: %s", error.message());
+          throw new BadRequestException(error.code(), "Malformed request: %s", error.message());
         case 401:
-          throw new NotAuthorizedException("Not authorized: %s", error.message());
+          throw new NotAuthorizedException(error.code(), "Not authorized: %s", error.message());
         case 403:
-          throw new ForbiddenException("Forbidden: %s", error.message());
+          throw new ForbiddenException(error.code(), "Forbidden: %s", error.message());
         case 405:
         case 406:
           break;
         case 500:
-          throw new ServiceFailureException("Server error: %s: %s", error.type(), error.message());
+          throw new ServiceFailureException(
+              error.code(), "Server error: %s: %s", error.type(), error.message());
         case 501:
           throw new UnsupportedOperationException(error.message());
         case 503:
-          throw new ServiceUnavailableException("Service unavailable: %s", error.message());
+          throw new ServiceUnavailableException(
+              error.code(), "Service unavailable: %s", error.message());
       }
 
       throw new RESTException(error.code(), "Unable to process: %s", error.message());
@@ -320,14 +322,14 @@ public class ErrorHandlers {
         switch (error.type()) {
           case OAuth2Properties.INVALID_CLIENT_ERROR:
             throw new NotAuthorizedException(
-                "Not authorized: %s: %s", error.type(), error.message());
+                error.code(), "Not authorized: %s: %s", error.type(), error.message());
           case OAuth2Properties.INVALID_REQUEST_ERROR:
           case OAuth2Properties.INVALID_GRANT_ERROR:
           case OAuth2Properties.UNAUTHORIZED_CLIENT_ERROR:
           case OAuth2Properties.UNSUPPORTED_GRANT_TYPE_ERROR:
           case OAuth2Properties.INVALID_SCOPE_ERROR:
             throw new BadRequestException(
-                "Malformed request: %s: %s", error.type(), error.message());
+                error.code(), "Malformed request: %s: %s", error.type(), error.message());
         }
       }
       throw new RESTException(error.code(), "Unable to process: %s", error.message());
